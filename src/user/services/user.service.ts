@@ -1,145 +1,155 @@
-import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 
 import { PrismaService } from "src/prisma/services/prisma.service";
 
-import { CreateUserDto } from "../dto/create-user.dto";
-import { UpdatePutUserDto } from "../dto/update-put-user.dto";
-import { UpdatePatchUserDto } from "../dto/update-patch-user.dto";
-import { ReadUserDto } from "../dto/read-user.dto";
+import { CreateUserDto } from "../domain/dto/create-user.dto";
+import { UpdatePutUserDto } from "../domain/dto/update-put-user.dto";
+import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";
 
+import { User } from "@prisma/client";
 @Injectable()
 export class UserService {
     constructor(
         private readonly prismaService: PrismaService,
     ) { }
 
-    async postUser(data: CreateUserDto) {
-        data.password = await bcrypt.hash(data.password, await bcrypt.genSalt())
-
-        return this.prismaService.user.create({
-            data,
-        });
+    async postUser(data: CreateUserDto): Promise<User> {
+        try {
+            data.password = await bcrypt.hash(data.password, await bcrypt.genSalt())
+    
+            return this.prismaService.user.create({
+                data,
+            });
+        } catch(error) {
+            throw new BadRequestException(error);
+        }
     }
 
-    async getUserByUuid(uuid: string): Promise<ReadUserDto> {
-        const user = await this.prismaService.user.findUnique({
-            where: {
-                uuid
-            }
-        });
-
-        return {
-            uuid: user.uuid,
-            name: user.name,
-            email: user.email,
-            birthDate: user.birthDate,
-            role: user.role,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
+    async getUserByUuid(uuid: string): Promise<User> {
+        try {
+            return this.prismaService.user.findUnique({
+                where: {
+                    uuid
+                }
+            });
+        } catch(error) {
+            throw new BadRequestException(error);
         }
     }
 
     async getUserByEmail(email: string, newUser?: boolean) {
-        const user = await this.prismaService.user.findUnique({
-            where: {
-                email
+        try {
+            const user = await this.prismaService.user.findUnique({
+                where: {
+                    email
+                }
+            });
+    
+            if(newUser) {
+                if(user) {
+                    throw new ConflictException('Este e-mail já está em uso');
+                }
+    
+                return user;
+            } else {
+                if(!user) {
+                    throw new NotFoundException('Usuário não encontrado');
+                }
+                return user;
             }
-        });
-
-        if(newUser) {
-            if(user) {
-                throw new ConflictException('Este e-mail já está em uso');
-            }
-
-            return user;
-        } else {
-            if(!user) {
-                throw new NotFoundException('Usuário não encontrado');
-            }
-            return user;
+        } catch(error) {
+            throw new BadRequestException(error);
         }
     }
 
-    async listUser(): Promise<ReadUserDto[]> {
-        const users = await this.prismaService.user.findMany();
+    async listUser(
+        page: number,
+        itemsPerPage: number,
+        search?: string
+    ): Promise<[User[], number]> {
+        const skip = Number((page - 1) * itemsPerPage);
+        const take = Number(itemsPerPage);
 
-        return users.map(user => ({
-            uuid: user.uuid,
-            name: user.name,
-            email: user.email,
-            birthDate: user.birthDate,
-            role: user.role,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-        }))
+        const query = this.prismaService.user;
+
+        try {
+            const total = await query.count({
+                where: {
+                    OR: [
+                        { name: { contains: search || '', mode: 'insensitive' } },
+                    ],
+                }
+            });
+
+            const users = await query.findMany({
+                orderBy: [
+                    {
+                        createdAt: 'desc'
+                    }
+                ],
+                where: {
+                    OR: [
+                        { name: { contains: search || '', mode: 'insensitive' } },
+                    ],
+                },
+                skip,
+                take
+            });
+
+            return [ users, total ];
+        } catch(error) {
+            throw new BadRequestException(error);
+        }
     }
 
-    async updateUser(uuid: string, data: UpdatePutUserDto): Promise<ReadUserDto> {
+    async updateUser(uuid: string, data: UpdatePutUserDto): Promise<User> {
         await this.existUser(uuid);
 
-        data.password = await bcrypt.hash(data.password, await bcrypt.genSalt());
-
-        const user = await this.prismaService.user.update({
-            where: {
-                uuid
-            },
-            data
-        });
-
-        return {
-            uuid: user.uuid,
-            name: user.name,
-            email: user.email,
-            birthDate: user.birthDate,
-            role: user.role,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
+        try {
+            data.password = await bcrypt.hash(data.password, await bcrypt.genSalt());
+    
+            return this.prismaService.user.update({
+                where: {
+                    uuid
+                },
+                data
+            });
+        } catch(error) {
+            throw new BadRequestException(error);
         }
     }
 
-    async patchUser(uuid: string, data: UpdatePatchUserDto): Promise<ReadUserDto> {
+    async patchUser(uuid: string, data: UpdatePatchUserDto): Promise<User> {
         await this.existUser(uuid);
 
-        if(data.password) {
-            data.password = await bcrypt.hash(data.password, await bcrypt.genSalt())
-        }
-
-        const user = await this.prismaService.user.update({
-            where: {
-                uuid
-            },
-            data
-        });
-
-        return {
-            uuid: user.uuid,
-            name: user.name,
-            email: user.email,
-            birthDate: user.birthDate,
-            role: user.role,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-        }
-    }
-
-    async deleteUser(uuid: string): Promise<ReadUserDto> {
-        await this.existUser(uuid);
-
-        const user = await this.prismaService.user.delete({
-            where: {
-                uuid
+        try {
+            if(data.password) {
+                data.password = await bcrypt.hash(data.password, await bcrypt.genSalt())
             }
-        });
+    
+            return this.prismaService.user.update({
+                where: {
+                    uuid
+                },
+                data
+            });
+        } catch(error) {
+            throw new BadRequestException(error);
+        }
+    }
 
-        return {
-            uuid: user.uuid,
-            name: user.name,
-            email: user.email,
-            birthDate: user.birthDate,
-            role: user.role,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
+    async deleteUser(uuid: string): Promise<User> {
+        await this.existUser(uuid);
+
+        try {
+            return await this.prismaService.user.delete({
+                where: {
+                    uuid
+                }
+            });
+        } catch(error) {
+            throw new BadRequestException(error);
         }
     }
 

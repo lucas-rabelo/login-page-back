@@ -7,7 +7,7 @@ import { PrismaService } from "src/prisma/services/prisma.service";
 import { UserService } from "src/user/services/user.service";
 import { MailerService } from "@nestjs-modules/mailer";
 
-import { CreateUserDto } from "src/user/dto/create-user.dto";
+import { CreateUserDto } from "src/user/domain/dto/create-user.dto";
 import { LoginAuthDto } from "../dto/login-auth.dto";
 
 @Injectable()

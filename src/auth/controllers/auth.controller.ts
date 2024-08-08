@@ -4,7 +4,7 @@ import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestj
 import { AuthService } from "../services/auth.service";
 import { StorageService } from "src/storage/services/storage.service";
 
-import { CreateUserDto } from "src/user/dto/create-user.dto";
+import { CreateUserDto } from "src/user/domain/dto/create-user.dto";
 import { LoginAuthDto } from "../dto/login-auth.dto";
 import { ForgetAuthDto } from "../dto/forget-auth.dto";
 
