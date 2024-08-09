@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
 import { User } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
@@ -8,7 +8,7 @@ import { UserService } from "src/user/services/user.service";
 import { MailerService } from "@nestjs-modules/mailer";
 
 import { CreateUserDto } from "src/user/domain/dto/create-user.dto";
-import { LoginAuthDto } from "../dto/login-auth.dto";
+import { LoginAuthDto } from "../domain/dto/login-auth.dto";
 
 @Injectable()
 export class AuthService {
@@ -81,9 +81,15 @@ export class AuthService {
     }
 
     async register(data: CreateUserDto) {
-        const user = await this.userService.postUser(data);
-
-        return this.createToken(user);
+        const userExist = await this.userService.getUserByEmail(data.email);
+        
+        if(userExist) {
+            throw new ConflictException("Esse e-mail já está em uso.");
+        } else {
+            const user = await this.userService.postUser(data);
+    
+            return this.createToken(user);
+        }
     }
 
     async forget(email: string) {

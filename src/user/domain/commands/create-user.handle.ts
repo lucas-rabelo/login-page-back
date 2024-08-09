@@ -24,6 +24,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
             name: newUser.name,
             email: newUser.email,
             role: newUser.role,
+            googleSub: newUser.googleSub,
             birthDate: newUser.birthDate,
             createdAt: newUser.createdAt,
             updatedAt: newUser.updatedAt,

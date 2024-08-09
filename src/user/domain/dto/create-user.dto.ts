@@ -1,4 +1,4 @@
-import { IsDateString, IsEmail, IsEnum, IsString, IsStrongPassword } from "class-validator";
+import { IsDateString, IsEmail, IsEnum, IsOptional, IsString, IsStrongPassword } from "class-validator";
 import { Role } from "src/core/enums/role.enum";
 
 export class CreateUserDto {
@@ -8,12 +8,14 @@ export class CreateUserDto {
     @IsEmail()
     email: string;
 
+    @IsOptional()
     @IsDateString()
     birthDate: string;
 
     @IsEnum(Role)
     role: string;
 
+    @IsOptional()
     @IsStrongPassword({
         minLength: 8,
         minLowercase: 1,
@@ -22,4 +24,8 @@ export class CreateUserDto {
         minUppercase: 1
     })
     password: string;
+
+    @IsOptional()
+    @IsString()
+    googleSub: string;
 }

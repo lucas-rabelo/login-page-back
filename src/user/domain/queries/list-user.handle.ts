@@ -29,6 +29,7 @@ export class ListUserHandler implements IQueryHandler<ListUserQuery> {
                             name: user.name,
                             email: user.email,
                             role: user.role,
+                            googleSub: user.googleSub,
                             birthDate: user.birthDate,
                             createdAt: user.createdAt,
                             updatedAt: user.updatedAt

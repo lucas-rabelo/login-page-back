@@ -22,4 +22,7 @@ export class ReadUserDto {
 
     @IsDate()
     updatedAt: Date;
+
+    @IsString()
+    googleSub: string;
 }

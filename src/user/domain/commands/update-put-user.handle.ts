@@ -26,6 +26,7 @@ export class UpdatePutUserHandler implements ICommandHandler<UpdatePutUserComman
             name: user.name,
             email: user.email,
             role: user.role,
+            googleSub: user.googleSub,
             birthDate: user.birthDate,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,

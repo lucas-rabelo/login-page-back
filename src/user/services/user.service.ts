@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import * as bcrypt from "bcrypt";
 
 import { PrismaService } from "src/prisma/services/prisma.service";
@@ -16,8 +16,10 @@ export class UserService {
 
     async postUser(data: CreateUserDto): Promise<User> {
         try {
-            data.password = await bcrypt.hash(data.password, await bcrypt.genSalt())
-    
+            if(data.password) {
+                data.password = await bcrypt.hash(data.password, await bcrypt.genSalt());
+            }
+
             return this.prismaService.user.create({
                 data,
             });
@@ -38,26 +40,36 @@ export class UserService {
         }
     }
 
-    async getUserByEmail(email: string, newUser?: boolean) {
+    async getUserByEmailAndSub(email: string, sub: string) {
+        try {
+            const user = await this.prismaService.user.findUnique({
+                where: {
+                    email,
+                    googleSub: sub
+                }
+            });
+
+            if(!user) {
+                return null;
+            }
+            return user;
+        } catch(error) {
+            throw new BadRequestException(error);
+        }
+    }
+
+    async getUserByEmail(email: string) {
         try {
             const user = await this.prismaService.user.findUnique({
                 where: {
                     email
                 }
             });
-    
-            if(newUser) {
-                if(user) {
-                    throw new ConflictException('Este e-mail já está em uso');
-                }
-    
-                return user;
-            } else {
-                if(!user) {
-                    throw new NotFoundException('Usuário não encontrado');
-                }
-                return user;
+
+            if(!user) {
+                return null;
             }
+            return user;
         } catch(error) {
             throw new BadRequestException(error);
         }
