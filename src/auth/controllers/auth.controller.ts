@@ -1,21 +1,21 @@
-import { Controller, Body, Post, UseGuards, UseInterceptors, UploadedFile, BadRequestException, UploadedFiles, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator, Get, Req, Res } from "@nestjs/common";
-import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { BadRequestException, Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, ParseFilePipe, Post, Req, Res, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from "@nestjs/common";
 import { AuthGuard as AuthPassportGuard } from '@nestjs/passport';
+import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 
 import { AuthService } from "../services/auth.service";
-import { StorageService } from "src/storage/services/storage.service";
 
-import { CreateUserDto } from "src/user/domain/dto/create-user.dto";
-import { LoginAuthDto } from "../domain/dto/login-auth.dto";
 import { ForgetAuthDto } from "../domain/dto/forget-auth.dto";
+import { LoginAuthDto } from "../domain/dto/login-auth.dto";
 
-import { AuthGuard } from "src/core/guards/auth.guard";
 
-import { User } from "src/core/decorators/user.decorator";
-import { join } from "path";
-import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
 import { CommandBus } from "@nestjs/cqrs";
+import { join } from "path";
+import { User } from "../../core/decorators/user.decorator";
+import { AuthGuard } from "../../core/guards/auth.guard";
+import type { StorageService } from "../../storage/services/storage.service";
+import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
 import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
+import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
 
 @Controller('auth')
 export class AuthController {
@@ -23,7 +23,7 @@ export class AuthController {
         private readonly authService: AuthService,
         private readonly commandBus: CommandBus,
         private readonly storageService: StorageService
-    ) {}
+    ) { }
 
     @Get('google')
     @UseGuards(AuthPassportGuard('google'))
@@ -34,11 +34,11 @@ export class AuthController {
     @Get('google/callback')
     @UseGuards(AuthPassportGuard('google'))
     async googleAuthRedirect(@Req() req, @Res() res) {
-      const { access_token } = await this.commandBus.execute<any, { access_token: string }>(
-        new VerifyUserGoogleCommand(req.user)
-      );
+        const { access_token } = await this.commandBus.execute<any, { access_token: string }>(
+            new VerifyUserGoogleCommand(req.user)
+        );
 
-      res.redirect(`http://localhost:5173/auth/google/callback?token=${access_token}`)
+        res.redirect(`http://localhost:5173/auth/google/callback?token=${access_token}`)
     }
 
     @Post('login')
@@ -71,7 +71,7 @@ export class AuthController {
     @UseGuards(AuthGuard)
     @Post('photo')
     async photo(
-        @User() user, 
+        @User() user,
         @UploadedFile(new ParseFilePipe({
             validators: [
                 new FileTypeValidator({ fileType: 'image/*' }),
@@ -81,10 +81,10 @@ export class AuthController {
     ) {
         const extension = photo.mimetype.split("/")[1];
         const path = join(__dirname, '..', '..', '..', 'public', 'profilePhotos', `photo-${user.user.uuid}.${extension}`)
-        
+
         try {
             await this.storageService.upload(photo, path);
-        } catch(e) {
+        } catch (e) {
             throw new BadRequestException(e);
         }
 

@@ -2,21 +2,20 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
 import { FindByUuidUserQuery } from "./findByUuid-user.query";
 
-import { UserService } from "src/user/services/user.service";
-
-import { ReadUserDto } from "../dto/read-user.dto";
 import { BadRequestException } from "@nestjs/common";
+import type { UserService } from "../../services/user.service";
+import { ReadUserDto } from "../dto/read-user.dto";
 
 @QueryHandler(FindByUuidUserQuery)
 export class FindByUuidUserHandler implements IQueryHandler<FindByUuidUserQuery> {
-    constructor(private readonly userService: UserService) {}
+    constructor(private readonly userService: UserService) { }
 
     async execute(query: FindByUuidUserQuery): Promise<ReadUserDto> {
         const { uuid } = query;
 
         const user = await this.userService.getUserByUuid(uuid);
 
-        if(!user) {
+        if (!user) {
             throw new BadRequestException('User Not Found');
         }
 

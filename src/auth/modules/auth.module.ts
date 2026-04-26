@@ -2,19 +2,18 @@ import { forwardRef, Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
-import { PrismaModule } from "src/prisma/modules/prisma.module";
-import { UserModule } from "src/user/modules/user.module";
-import { StorageModule } from "src/storage/modules/storage.module";
-
 import { AuthController } from "../controllers/auth.controller";
 
+import { CqrsModule } from "@nestjs/cqrs";
 import { AuthService } from "../services/auth.service";
 import { GoogleStrategy } from "../strategies/google.strategy";
-import { CqrsModule } from "@nestjs/cqrs";
 
+import { PrismaModule } from "../../prisma/modules/prisma.module";
+import { StorageModule } from "../../storage/modules/storage.module";
+import { UserModule } from "../../user/modules/user.module";
 import { VerifyUserGoogleHandler } from "../domain/command/verify-user-google.handle";
 
-export const CommandHandlers = [ VerifyUserGoogleHandler ];
+export const CommandHandlers = [VerifyUserGoogleHandler];
 @Module({
     imports: [
         CqrsModule,
