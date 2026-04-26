@@ -1,19 +1,18 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { CqrsModule } from "@nestjs/cqrs";
 
-import { PrismaModule } from "src/prisma/modules/prisma.module";
-import { AuthModule } from "src/auth/modules/auth.module";
-
-import { UserService } from "../services/user.service";
 import { UserController } from "../controllers/user.controller";
+import { UserService } from "../services/user.service";
 
 import { CreateUserHandler } from "../domain/commands/create-user.handle";
-import { UpdatePutUserHandler } from "../domain/commands/update-put-user.handle";
-import { UpdatePatchUserHandler } from "../domain/commands/update-patch-user.handle";
 import { DeleteUserHandler } from "../domain/commands/delete-user.handle";
+import { UpdatePatchUserHandler } from "../domain/commands/update-patch-user.handle";
+import { UpdatePutUserHandler } from "../domain/commands/update-put-user.handle";
 
-import { ListUserHandler } from "../domain/queries/list-user.handle";
+import { AuthModule } from "../../auth/modules/auth.module";
+import { PrismaModule } from "../../prisma/modules/prisma.module";
 import { FindByUuidUserHandler } from "../domain/queries/findByUuid-user.handle";
+import { ListUserHandler } from "../domain/queries/list-user.handle";
 
 export const CommandHandlers = [
     CreateUserHandler,
@@ -37,4 +36,4 @@ export const QueryHandlers = [
     providers: [UserService, ...CommandHandlers, ...QueryHandlers],
     exports: [UserService]
 })
-export class UserModule {}
+export class UserModule { }

@@ -1,5 +1,5 @@
 import { IsDate, IsDateString, IsEmail, IsEnum, IsString } from "class-validator";
-import { Role } from "src/core/enums/role.enum";
+import { Role } from "../../../core/enums/role.enum";
 
 export class ReadUserDto {
     @IsString()
@@ -7,10 +7,10 @@ export class ReadUserDto {
 
     @IsString()
     name: string;
-    
+
     @IsEmail()
     email: string;
-    
+
     @IsEnum(Role)
     role: string;
 

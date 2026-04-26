@@ -1,42 +1,39 @@
-import { 
-    Get, 
-    Put, 
-    Body, 
-    Post, 
-    Query,
-    Param, 
-    Patch, 
-    Delete, 
-    UseGuards,
-    Controller, 
-    ParseUUIDPipe,
+import {
+    Body,
+    Controller,
+    Delete,
+    Get,
+    Param,
     ParseIntPipe,
+    ParseUUIDPipe,
+    Patch,
+    Post,
+    Put,
+    Query,
+    UseGuards,
 } from "@nestjs/common";
-import { 
-    QueryBus,
-    CommandBus 
+import {
+    CommandBus,
+    QueryBus
 } from '@nestjs/cqrs';
 
 import { CreateUserDto } from "../domain/dto/create-user.dto";
-import { UpdatePutUserDto } from "../domain/dto/update-put-user.dto";
-import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";
-import { ReadUserDto } from "../domain/dto/read-user.dto";
 import { ListUserDto } from "../domain/dto/list-user.dto";
-
-import { Roles } from "src/core/decorators/role.decorator";
-
-import { Role } from "src/core/enums/role.enum";
-
-import { RoleGuard } from "src/core/guards/role.guard";
-import { AuthGuard } from "src/core/guards/auth.guard";
+import { ReadUserDto } from "../domain/dto/read-user.dto";
+import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";
+import { UpdatePutUserDto } from "../domain/dto/update-put-user.dto";
 
 import { CreateUserCommand } from "../domain/commands/create-user.command";
-import { UpdatePutUserCommand } from "../domain/commands/update-put-user.command";
-import { UpdatePatchUserCommand } from "../domain/commands/update-patch-user.command";
 import { DeleteUserCommand } from "../domain/commands/delete-user.command";
+import { UpdatePatchUserCommand } from "../domain/commands/update-patch-user.command";
+import { UpdatePutUserCommand } from "../domain/commands/update-put-user.command";
 
-import { ListUserQuery } from "../domain/queries/list-user.query";
+import { Roles } from "../../core/decorators/role.decorator";
+import { Role } from "../../core/enums/role.enum";
+import { AuthGuard } from "../../core/guards/auth.guard";
+import { RoleGuard } from "../../core/guards/role.guard";
 import { FindByUuidUserQuery } from "../domain/queries/findByUuid-user.query";
+import { ListUserQuery } from "../domain/queries/list-user.query";
 
 @Roles(Role.Admin)
 @UseGuards(AuthGuard, RoleGuard)
@@ -45,7 +42,7 @@ export class UserController {
     constructor(
         private readonly commandBus: CommandBus,
         private readonly queryBus: QueryBus,
-    ) {}
+    ) { }
 
     @Post()
     async create(@Body() createUserDto: CreateUserDto): Promise<ReadUserDto> {
@@ -85,7 +82,7 @@ export class UserController {
     @Patch(':uuid')
     async editPartialUser(
         @Param('uuid', ParseUUIDPipe) uuid: string,
-        @Body() updatePatchUserDto: UpdatePatchUserDto, 
+        @Body() updatePatchUserDto: UpdatePatchUserDto,
     ): Promise<ReadUserDto> {
         return await this.commandBus.execute(
             new UpdatePatchUserCommand(uuid, updatePatchUserDto)

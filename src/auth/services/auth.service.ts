@@ -1,13 +1,13 @@
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { User } from "@prisma/client";
 import { JwtService } from "@nestjs/jwt";
+import { User } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 
-import { PrismaService } from "src/prisma/services/prisma.service";
-import { UserService } from "src/user/services/user.service";
 import { MailerService } from "@nestjs-modules/mailer";
 
-import { CreateUserDto } from "src/user/domain/dto/create-user.dto";
+import type { PrismaService } from "../../prisma/services/prisma.service";
+import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
+import type { UserService } from "../../user/services/user.service";
 import { LoginAuthDto } from "../domain/dto/login-auth.dto";
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AuthService {
         private readonly jwtService: JwtService,
         private readonly userService: UserService,
         private readonly mailerService: MailerService
-    ) {}
+    ) { }
 
     createToken(user: User) {
         const token = this.jwtService.sign({
@@ -39,14 +39,14 @@ export class AuthService {
             const data = this.jwtService.verify(token);
 
             return data;
-        } catch(e) {
+        } catch (e) {
             throw new UnauthorizedException('Usuário não autorizado');
         }
     }
 
     validateToken(token: string) {
         const validated = this.checkToken(token);
-        if(validated) {
+        if (validated) {
             return true;
         } else {
             return false;
@@ -56,13 +56,13 @@ export class AuthService {
     async login(data: LoginAuthDto) {
         const user = await this.userService.getUserByEmail(data.email);
 
-        if(!user) {
+        if (!user) {
             throw new UnauthorizedException('Usuário e/ou senha incorretas!');
-        } 
-        
-        if(!await bcrypt.compare(data.password, user.password)) {
+        }
+
+        if (!await bcrypt.compare(data.password, user.password)) {
             throw new UnauthorizedException('Usuário e/ou senha incorretas!');
-        } 
+        }
 
         return this.createToken(user);
     }
@@ -70,10 +70,10 @@ export class AuthService {
     async resetPassword(password: string, token: string) {
         const user = this.jwtService.verify<User>(token, {
             issuer: 'forget',
-            audience: 'users' 
+            audience: 'users'
         });
 
-        if(!user.uuid) {
+        if (!user.uuid) {
             throw new BadRequestException("Token inválido.")
         }
 
@@ -82,12 +82,12 @@ export class AuthService {
 
     async register(data: CreateUserDto) {
         const userExist = await this.userService.getUserByEmail(data.email);
-        
-        if(userExist) {
+
+        if (userExist) {
             throw new ConflictException("Esse e-mail já está em uso.");
         } else {
             const user = await this.userService.postUser(data);
-    
+
             return this.createToken(user);
         }
     }
@@ -101,7 +101,7 @@ export class AuthService {
             expiresIn: '30 minutes',
             subject: user.uuid,
             issuer: 'forget',
-            audience: 'users' 
+            audience: 'users'
         });
 
         const url = `${process.env.URL_FRONT}reset_password/${token}`;
@@ -116,7 +116,7 @@ export class AuthService {
             },
         });
 
-        if(response) {
+        if (response) {
             return true;
         } else {
             return false;
