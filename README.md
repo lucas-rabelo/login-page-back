@@ -1,73 +1,101 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Login Page (Back-end)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este projeto contem toda a lógica de negócio para o gerenciamento de usuários, o que inclui:
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- Criação
+- Edição
+- Exclusão
+- Listagem
 
-## Description
+Também há o gerenciamento de permissões para o acesso do gerenciamento dos usuários.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Lista de tecnologias
 
-## Installation
+- [ ] NestJS
+- [ ] Node.js
+- [ ] Typescript
+- [ ] PrismaORM
+- [ ] Docker
+- [ ] PostgreSQL
+- [ ] Google OAuth2
 
-```bash
-$ npm install
-```
+## Pré-requisitos
 
-## Running the app
+Para fazer a aplicação funcionar no seu ambiente, você precisa:
+
+- Node.js +20
+- Docker e Docker compose
+- Criar uma conta no [Mailtrap](https://mailtrap.io/pt/) (para os e-mails)
+- Credenciais OAuth2 no [Google Cloud Console](https://console.cloud.google.com)
+
+## Instalação e configuração
 
 ```bash
-# development
-$ npm run start
+# 1. Clone o repositório
+git clone https://github.com/lucas-rabelo/login-page-back.git
+cd login-page-back
 
-# watch mode
-$ npm run start:dev
+# 2. Instale as dependências
+npm install
 
-# production mode
-$ npm run start:prod
+# 3. Configure as variáveis de ambiente
+cp .env.example .env
+# Edite o .env com suas credenciais
+
+# 4. Suba o banco de dados
+docker-compose up -d
+
+# 5. Execute as migrations
+npx prisma migrate dev
 ```
 
-## Test
+## Variáveis de ambiente
+
+| Variável | Descrição | Exemplo |
+|---|---|---|
+| `NODE_ENV` | String para validação em qual ambiente o projeto está | `development` |
+| `URL_FRONT` | Url para qual o sistema irá mandar o e-mail para alteração de senha | `sua url do ambiente de testes do front` |
+| `SECRET_ENV` | Chave secreta para assinar tokens  | `sua-chave-secreta` |
+| `MAILTRAP_HOST` | Host da API do Mailtrap | `seu-host` |
+| `MAILTRAP_PORT` | Porta da API do Mailtrap | `sua-porta` |
+| `MAILTRAP_USERNAME` | Username da API do Mailtrap | `seu-username` |
+| `MAILTRAP_PASSWORD` | Password da API do Mailtrap | `seu-password` |
+| `GOOGLE_CLIENT_ID` | Seu cliente ID do google | `seu-client-id` |
+| `GOOGLE_CLIENT_SECRET` | Seu secret do google | `seu-secret` |
+| `DB_USER` | Seu user do banco de dados | `seu-user` |
+| `DB_PASS` | Sua senha do banco de dados | `sua-senha` |
+| `DB_NAME` | O nome do banco de dados | `o-nome-do-banco` |
+| `DB_PORT` | A porta do banco de dados | `a-porta-do-banco` |
+| `DB_HOST` | E o host do banco de dados | `o-host-do-banco` |
+| `DATABASE_URL` | É a junção de todas as variários do banco de dados em uma string | `"postgresql://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?schema=public&connect_timeout=300"` |
+
+## Como rodar o projeto?
 
 ```bash
-# unit tests
-$ npm run test
+# Desenvolvimento
+npm run start:dev
 
-# e2e tests
-$ npm run test:e2e
+# Produção
+npm run build
+npm run start:prod
 
-# test coverage
-$ npm run test:cov
+# Testes
+npm run test        # unitários
+npm run test:e2e    # end-to-end
+npm run test:cov    # cobertura
 ```
 
-## Support
+## Contribuição
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Este projeto usa [Conventional Commits](https://www.conventionalcommits.org).
+Commits fora do padrão são bloqueados automaticamente pelo Husky.
 
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+git checkout -b feat/nome-da-feature
+# faça suas mudanças
+git commit -m "feat(escopo): descrição curta"
+```
 
 ## License
 
-Nest is [MIT licensed](LICENSE).
+[MIT](https://choosealicense.com/licenses/mit/)
