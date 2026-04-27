@@ -3,6 +3,7 @@ import { CqrsModule } from "@nestjs/cqrs";
 
 import { UserController } from "../controllers/user.controller";
 import { UserService } from "../services/user.service";
+import { HashService } from "../services/hash.service";
 
 import { CreateUserHandler } from "../domain/commands/create-user.handle";
 import { DeleteUserHandler } from "../domain/commands/delete-user.handle";
@@ -33,7 +34,7 @@ export const QueryHandlers = [
         forwardRef(() => AuthModule)
     ],
     controllers: [UserController],
-    providers: [UserService, ...CommandHandlers, ...QueryHandlers],
+    providers: [UserService, HashService, ...CommandHandlers, ...QueryHandlers],
     exports: [UserService]
 })
 export class UserModule { }
