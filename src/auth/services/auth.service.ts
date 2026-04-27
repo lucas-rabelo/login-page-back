@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
 import { User } from "@prisma/client";
 
 import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
@@ -59,6 +59,8 @@ export class AuthService {
 
     async forget(email: string) {
         const user = await this.userService.getUserByEmail(email);
+
+        if (!user) throw new NotFoundException('E-mail não encontrado.');
 
         const token = this.tokenService.createToken(user, {
             expiresIn: '30 minutes',

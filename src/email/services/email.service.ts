@@ -22,10 +22,6 @@ export class EmailService {
             },
         });
 
-        if (response) {
-            return true;
-        } else {
-            return false;
-        }
+        return !!response;
     }
 }

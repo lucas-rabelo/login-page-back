@@ -32,6 +32,6 @@ export class TokenService {
 
   validateToken<T extends object>(token: string, options?: JwtVerifyOptions) {
     const validated = this.checkToken<T>(token, options);
-    return validated ? true : false;
+    return !!validated;
   }
 }
