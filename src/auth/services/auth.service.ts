@@ -6,8 +6,8 @@ import { LoginAuthDto } from "../domain/dto/login-auth.dto";
 
 import type { UserService } from "../../user/services/user.service";
 import type { EmailService } from "../../email/services/email.service";
-import type { HashService } from "./hash.service";
-import type { TokenService } from "./token.service";
+import type { TokenService } from "../../shared/token/services/token.service";
+import type { HashService } from "../../shared/hash/services/hash.service";
 
 @Injectable()
 export class AuthService {
