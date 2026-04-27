@@ -1,78 +1,63 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import * as bcrypt from "bcrypt";
+import { Injectable, NotFoundException } from "@nestjs/common";
 
 import type { PrismaService } from "../../prisma/services/prisma.service";
+import type { HashService } from "./hash.service";
 
 import { CreateUserDto } from "../domain/dto/create-user.dto";
-import { UpdatePutUserDto } from "../domain/dto/update-put-user.dto";
 import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";
+import { UpdatePutUserDto } from "../domain/dto/update-put-user.dto";
 
 import { User } from "@prisma/client";
 @Injectable()
 export class UserService {
     constructor(
         private readonly prismaService: PrismaService,
+        private readonly hashService: HashService,
     ) { }
 
     async postUser(data: CreateUserDto): Promise<User> {
-        try {
-            if(data.password) {
-                data.password = await bcrypt.hash(data.password, await bcrypt.genSalt());
-            }
-
-            return this.prismaService.user.create({
-                data,
-            });
-        } catch(error) {
-            throw new BadRequestException(error);
+        if (data.password) {
+            data.password = await this.hashService.hash(data.password);
         }
+
+        return this.prismaService.user.create({
+            data,
+        });
     }
 
     async getUserByUuid(uuid: string): Promise<User> {
-        try {
-            return this.prismaService.user.findUnique({
-                where: {
-                    uuid
-                }
-            });
-        } catch(error) {
-            throw new BadRequestException(error);
-        }
+        return this.prismaService.user.findUnique({
+            where: {
+                uuid
+            }
+        });
     }
 
     async getUserByEmailAndSub(email: string, sub: string) {
-        try {
-            const user = await this.prismaService.user.findUnique({
-                where: {
-                    email,
-                    googleSub: sub
-                }
-            });
-
-            if(!user) {
-                return null;
+        const user = await this.prismaService.user.findUnique({
+            where: {
+                email,
+                googleSub: sub
             }
-            return user;
-        } catch(error) {
-            throw new BadRequestException(error);
+        });
+
+        if (!user) {
+            return null;
         }
+        return user;
     }
 
     async getUserByEmail(email: string) {
-        try {
-            const user = await this.prismaService.user.findUnique({
-                where: {
-                    email
-                }
-            });
-
-            if(!user) {
-                return null;
+        const user = await this.prismaService.user.findUnique({
+            where: {
+                email
             }
-            return user;
-        } catch(error) {
-            throw new BadRequestException(error);
+        });
+
+        if (!user) {
+            return null;
         }
+        return user;
     }
 
     async listUser(
@@ -84,89 +69,72 @@ export class UserService {
         const take = Number(itemsPerPage);
 
         const query = this.prismaService.user;
+        const where: any = {};
 
-        try {
-            const total = await query.count({
-                where: {
-                    OR: [
-                        { name: { contains: search || '', mode: 'insensitive' } },
-                    ],
-                }
-            });
-
-            const users = await query.findMany({
-                orderBy: [
-                    {
-                        createdAt: 'desc'
-                    }
-                ],
-                where: {
-                    OR: [
-                        { name: { contains: search || '', mode: 'insensitive' } },
-                    ],
-                },
-                skip,
-                take
-            });
-
-            return [ users, total ];
-        } catch(error) {
-            throw new BadRequestException(error);
+        if (search) {
+            where.OR = [
+                { name: { contains: search || '', mode: 'insensitive' } }
+            ]
         }
+
+        const total = await query.count({
+            where
+        });
+
+        const users = await query.findMany({
+            orderBy: [
+                {
+                    createdAt: 'desc'
+                }
+            ],
+            where,
+            skip,
+            take
+        });
+
+        return [users, total];
     }
 
     async updateUser(uuid: string, data: UpdatePutUserDto): Promise<User> {
         await this.existUser(uuid);
+        data.password = await this.hashService.hash(data.password);
 
-        try {
-            data.password = await bcrypt.hash(data.password, await bcrypt.genSalt());
-    
-            return this.prismaService.user.update({
-                where: {
-                    uuid
-                },
-                data
-            });
-        } catch(error) {
-            throw new BadRequestException(error);
-        }
+        return this.prismaService.user.update({
+            where: {
+                uuid
+            },
+            data
+        });
     }
 
     async patchUser(uuid: string, data: UpdatePatchUserDto): Promise<User> {
         await this.existUser(uuid);
 
-        try {
-            if(data.password) {
-                data.password = await bcrypt.hash(data.password, await bcrypt.genSalt())
-            }
-    
-            return this.prismaService.user.update({
-                where: {
-                    uuid
-                },
-                data
-            });
-        } catch(error) {
-            throw new BadRequestException(error);
+        if (data.password) {
+            data.password = await this.hashService.hash(data.password);
         }
+
+        return this.prismaService.user.update({
+            where: {
+                uuid
+            },
+            data
+        });
+
     }
 
     async deleteUser(uuid: string): Promise<User> {
         await this.existUser(uuid);
 
-        try {
-            return await this.prismaService.user.delete({
-                where: {
-                    uuid
-                }
-            });
-        } catch(error) {
-            throw new BadRequestException(error);
-        }
+        return await this.prismaService.user.delete({
+            where: {
+                uuid
+            }
+        });
     }
 
     async existUser(uuid: string) {
-        if(!(await this.getUserByUuid(uuid))) {
+        if (!(await this.getUserByUuid(uuid))) {
             throw new NotFoundException(`o usuário ${uuid} não foi encontrado.`);
         }
     }
