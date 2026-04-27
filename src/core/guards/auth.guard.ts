@@ -1,7 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import type { User } from "@prisma/client";
-import type { TokenService } from "../../auth/services/token.service";
 import type { UserService } from "../../user/services/user.service";
+import type { TokenService } from "../../shared/token/services/token.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {

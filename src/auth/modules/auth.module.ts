@@ -1,4 +1,4 @@
-import { forwardRef, Module } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 
@@ -10,11 +10,11 @@ import { GoogleStrategy } from "../strategies/google.strategy";
 
 import { EmailModule } from "../../email/modules/email.module";
 import { PrismaModule } from "../../prisma/modules/prisma.module";
+import { HashModule } from "../../shared/hash/modules/hash.module";
+import { TokenModule } from "../../shared/token/modules/token.module";
 import { StorageModule } from "../../storage/modules/storage.module";
 import { UserModule } from "../../user/modules/user.module";
 import { VerifyUserGoogleHandler } from "../domain/command/verify-user-google.handle";
-import { HashModule } from "../../shared/hash/modules/hash.module";
-import { TokenModule } from "../../shared/token/modules/token.module";
 
 export const CommandHandlers = [VerifyUserGoogleHandler];
 @Module({
@@ -29,7 +29,7 @@ export const CommandHandlers = [VerifyUserGoogleHandler];
         StorageModule,
         TokenModule,
         EmailModule,
-        forwardRef(() => UserModule)
+        UserModule,
     ],
     controllers: [AuthController],
     providers: [AuthService, GoogleStrategy, ...CommandHandlers],

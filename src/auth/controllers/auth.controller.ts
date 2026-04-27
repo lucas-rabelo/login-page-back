@@ -12,11 +12,11 @@ import { CommandBus } from "@nestjs/cqrs";
 import { join } from "path";
 import { User } from "../../core/decorators/user.decorator";
 import { AuthGuard } from "../../core/guards/auth.guard";
+import type { TokenService } from "../../shared/token/services/token.service";
 import type { StorageService } from "../../storage/services/storage.service";
 import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
 import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
 import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
-import type { TokenService } from "../services/token.service";
 
 @Controller('auth')
 export class AuthController {
