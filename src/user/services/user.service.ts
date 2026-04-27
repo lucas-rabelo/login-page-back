@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 
 import type { PrismaService } from "../../prisma/services/prisma.service";
-import type { HashService } from "./hash.service";
+import type { HashService } from "../../auth/services/hash.service";
 
 import { CreateUserDto } from "../domain/dto/create-user.dto";
 import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";

@@ -2,14 +2,14 @@ import { BadRequestException } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 import type { UserService } from "../../../user/services/user.service";
-import type { AuthService } from "../../services/auth.service";
+import type { TokenService } from "../../services/token.service";
 import { VerifyUserGoogleCommand } from "./verify-user-google.command";
 
 @CommandHandler(VerifyUserGoogleCommand)
 export class VerifyUserGoogleHandler implements ICommandHandler<VerifyUserGoogleCommand> {
     constructor(
         private readonly userService: UserService,
-        private readonly authService: AuthService
+        private readonly tokenService: TokenService
     ) { }
 
     async execute(command: VerifyUserGoogleCommand) {
@@ -28,12 +28,12 @@ export class VerifyUserGoogleHandler implements ICommandHandler<VerifyUserGoogle
                     password: null
                 });
 
-                return this.authService.createToken(newUser);
+                return this.tokenService.createToken(newUser);
             } catch (error) {
                 throw new BadRequestException('Erro ao criar usuário: ' + error.message);
             }
         } else {
-            return this.authService.createToken(userExist);
+            return this.tokenService.createToken(userExist);
         }
     }
 }
