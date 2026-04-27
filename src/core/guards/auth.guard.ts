@@ -1,11 +1,12 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
-import type { AuthService } from "../../auth/services/auth.service";
+import type { User } from "@prisma/client";
+import type { TokenService } from "../../auth/services/token.service";
 import type { UserService } from "../../user/services/user.service";
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     constructor(
-        private readonly authService: AuthService,
+        private readonly tokenService: TokenService,
         private readonly userService: UserService
     ) { }
 
@@ -16,7 +17,7 @@ export class AuthGuard implements CanActivate {
         try {
             const token = (authorization ?? "").split(" ")[1];
 
-            const data = await this.authService.checkToken(token);
+            const data = this.tokenService.checkToken<User>(token);
 
             request.token = token;
             request.user = await this.userService.getUserByUuid(data.uuid);

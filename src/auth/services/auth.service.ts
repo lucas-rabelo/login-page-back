@@ -1,57 +1,22 @@
 import { BadRequestException, ConflictException, Injectable, UnauthorizedException } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import { User } from "@prisma/client";
-import * as bcrypt from "bcrypt";
 
-import { MailerService } from "@nestjs-modules/mailer";
-
-import type { PrismaService } from "../../prisma/services/prisma.service";
 import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
-import type { UserService } from "../../user/services/user.service";
 import { LoginAuthDto } from "../domain/dto/login-auth.dto";
+
+import type { UserService } from "../../user/services/user.service";
+import type { EmailService } from "../../email/services/email.service";
+import type { HashService } from "./hash.service";
+import type { TokenService } from "./token.service";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly prismaService: PrismaService,
-        private readonly jwtService: JwtService,
+        private readonly tokenService: TokenService,
         private readonly userService: UserService,
-        private readonly mailerService: MailerService
+        private readonly emailService: EmailService,
+        private readonly hashService: HashService
     ) { }
-
-    createToken(user: User) {
-        const token = this.jwtService.sign({
-            uuid: user.uuid,
-            name: user.name,
-            email: user.email
-        }, {
-            expiresIn: '7 days',
-            subject: user.uuid,
-        });
-
-        return {
-            access_token: token
-        }
-    }
-
-    checkToken(token: string) {
-        try {
-            const data = this.jwtService.verify(token);
-
-            return data;
-        } catch (e) {
-            throw new UnauthorizedException('Usuário não autorizado');
-        }
-    }
-
-    validateToken(token: string) {
-        const validated = this.checkToken(token);
-        if (validated) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     async login(data: LoginAuthDto) {
         const user = await this.userService.getUserByEmail(data.email);
@@ -60,15 +25,15 @@ export class AuthService {
             throw new UnauthorizedException('Usuário e/ou senha incorretas!');
         }
 
-        if (!await bcrypt.compare(data.password, user.password)) {
+        if (!await this.hashService.compare(data.password, user.password)) {
             throw new UnauthorizedException('Usuário e/ou senha incorretas!');
         }
 
-        return this.createToken(user);
+        return this.tokenService.createToken(user);
     }
 
     async resetPassword(password: string, token: string) {
-        const user = this.jwtService.verify<User>(token, {
+        const user = this.tokenService.checkToken<User>(token, {
             issuer: 'forget',
             audience: 'users'
         });
@@ -88,32 +53,25 @@ export class AuthService {
         } else {
             const user = await this.userService.postUser(data);
 
-            return this.createToken(user);
+            return this.tokenService.createToken(user);
         }
     }
 
     async forget(email: string) {
         const user = await this.userService.getUserByEmail(email);
 
-        const token = this.jwtService.sign({
-            uuid: user.uuid
-        }, {
+        const token = this.tokenService.createToken(user, {
             expiresIn: '30 minutes',
             subject: user.uuid,
             issuer: 'forget',
             audience: 'users'
         });
 
-        const url = `${process.env.URL_FRONT}reset_password/${token}`;
-
-        const response = await this.mailerService.sendMail({
+        const response = await this.emailService.sendEmail({
+            token: token.access_token,
+            user,
             subject: 'Reset my password!',
-            to: user.email,
-            template: 'reset-password',
-            context: {
-                name: user.name,
-                url
-            },
+            template: 'reset-password'
         });
 
         if (response) {

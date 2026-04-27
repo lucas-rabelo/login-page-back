@@ -16,11 +16,13 @@ import type { StorageService } from "../../storage/services/storage.service";
 import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
 import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
 import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
+import type { TokenService } from "../services/token.service";
 
 @Controller('auth')
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
+        private readonly tokenService: TokenService,
         private readonly commandBus: CommandBus,
         private readonly storageService: StorageService
     ) { }
@@ -58,7 +60,7 @@ export class AuthController {
 
     @Post('validate')
     async validate(@Body('token') token: string) {
-        return this.authService.validateToken(token);
+        return this.tokenService.validateToken(token);
     }
 
     @UseGuards(AuthGuard)
