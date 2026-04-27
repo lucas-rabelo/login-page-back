@@ -1,15 +1,15 @@
 import { BadRequestException } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-import type { UserService } from "../../../user/services/user.service";
-import type { TokenService } from "../../services/token.service";
+import { UserService } from "../../../user/services/user.service";
 import { VerifyUserGoogleCommand } from "./verify-user-google.command";
+import { TokenService } from "../../../../shared/token/services/token.service";
 
 @CommandHandler(VerifyUserGoogleCommand)
 export class VerifyUserGoogleHandler implements ICommandHandler<VerifyUserGoogleCommand> {
     constructor(
         private readonly userService: UserService,
-        private readonly tokenService: TokenService
+        private readonly tokenService: TokenService,
     ) { }
 
     async execute(command: VerifyUserGoogleCommand) {

@@ -1,22 +1,39 @@
-import { BadRequestException, Body, Controller, FileTypeValidator, Get, MaxFileSizeValidator, ParseFilePipe, Post, Req, Res, UploadedFile, UploadedFiles, UseGuards, UseInterceptors } from "@nestjs/common";
+import {
+    BadRequestException,
+    Body,
+    Controller,
+    FileTypeValidator,
+    Get,
+    MaxFileSizeValidator,
+    ParseFilePipe,
+    Post,
+    Req,
+    Res,
+    UploadedFile,
+    UploadedFiles,
+    UseGuards,
+    UseInterceptors
+} from "@nestjs/common";
+import { CommandBus } from "@nestjs/cqrs";
 import { AuthGuard as AuthPassportGuard } from '@nestjs/passport';
 import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { join } from "path";
 
 import { AuthService } from "../services/auth.service";
 
+import { CreateUserDto } from "../../user/domain/dto/create-user.dto";
 import { ForgetAuthDto } from "../domain/dto/forget-auth.dto";
 import { LoginAuthDto } from "../domain/dto/login-auth.dto";
-
-
-import { CommandBus } from "@nestjs/cqrs";
-import { join } from "path";
-import { User } from "../../core/decorators/user.decorator";
-import { AuthGuard } from "../../core/guards/auth.guard";
-import type { StorageService } from "../../storage/services/storage.service";
-import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
-import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
 import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
-import type { TokenService } from "../services/token.service";
+
+import { User } from "../../../core/decorators/user.decorator";
+
+import { AuthGuard } from "../../../core/guards/auth.guard";
+
+import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
+
+import { StorageService } from "../../../shared/storage/services/storage.service";
+import { TokenService } from "../../../shared/token/services/token.service";
 
 @Controller('auth')
 export class AuthController {

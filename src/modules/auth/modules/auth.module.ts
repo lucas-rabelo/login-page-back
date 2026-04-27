@@ -1,5 +1,4 @@
-import { forwardRef, Module } from "@nestjs/common";
-import { JwtModule } from "@nestjs/jwt";
+import { Module } from "@nestjs/common";
 import { PassportModule } from "@nestjs/passport";
 
 import { AuthController } from "../controllers/auth.controller";

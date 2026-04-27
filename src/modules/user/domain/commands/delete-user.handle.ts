@@ -1,8 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
-import type { DeleteDto } from '../../../core/dto/delete.dto';
-import type { UserService } from '../../services/user.service';
+import type { DeleteDto } from '../../../../core/dto/delete.dto';
+import { UserService } from '../../services/user.service';
 import { DeleteUserCommand } from './delete-user.command';
 
 @CommandHandler(DeleteUserCommand)

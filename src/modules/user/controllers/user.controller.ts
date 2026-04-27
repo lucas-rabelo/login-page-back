@@ -28,10 +28,10 @@ import { DeleteUserCommand } from "../domain/commands/delete-user.command";
 import { UpdatePatchUserCommand } from "../domain/commands/update-patch-user.command";
 import { UpdatePutUserCommand } from "../domain/commands/update-put-user.command";
 
-import { Roles } from "../../core/decorators/role.decorator";
-import { Role } from "../../core/enums/role.enum";
-import { AuthGuard } from "../../core/guards/auth.guard";
-import { RoleGuard } from "../../core/guards/role.guard";
+import { Roles } from "../../../core/decorators/role.decorator";
+import { Role } from "../../../core/enums/role.enum";
+import { AuthGuard } from "../../../core/guards/auth.guard";
+import { RoleGuard } from "../../../core/guards/role.guard";
 import { FindByUuidUserQuery } from "../domain/queries/findByUuid-user.query";
 import { ListUserQuery } from "../domain/queries/list-user.query";
 
