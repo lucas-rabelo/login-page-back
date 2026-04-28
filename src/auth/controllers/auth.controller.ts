@@ -3,19 +3,24 @@ import { CommandBus } from "@nestjs/cqrs";
 import { AuthGuard as AuthPassportGuard } from '@nestjs/passport';
 import type { Request, Response } from "express";
 
-import { AuthService } from "../services/auth.service";
+import { CommandBus } from "@nestjs/cqrs";
 
 import { ForgetAuthDto } from "../domain/dto/forget-auth.dto";
 import { LoginAuthDto } from "../domain/dto/login-auth.dto";
-
+import type { RegisterAuthDto } from "../domain/dto/register-auth.dto";
+import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
+import type { ValidateAuthDto } from "../domain/dto/validate-auth.dto";
 
 import { CommandBus } from "@nestjs/cqrs";
 import { join } from "path";
 import { User } from "../../core/decorators/user.decorator";
 import { AuthGuard } from "../../core/guards/auth.guard";
-import type { TokenService } from "../../shared/token/services/token.service";
-import type { StorageService } from "../../storage/services/storage.service";
-import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
+
+import { ForgetAuthCommand } from "../domain/command/forget-auth.command";
+import { LoginAuthCommand } from "../domain/command/login-auth.command";
+import { RegisterAuthCommand } from "../domain/command/register-auth.command";
+import { ResetPasswordAuthCommand } from "../domain/command/reset-password-auth.command";
+import { ValidateAuthCommand } from "../domain/command/validate-auth.command";
 import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
 import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
 
@@ -48,79 +53,42 @@ export class AuthController {
 
     @Post('login')
 @HttpCode(201)
-    async login(@Body() data: LoginAuthDto) {
-        return this.authService.login(data);
+    async login(@Body() loginAuthDto: LoginAuthDto) {
+        return await this.commandBus.execute(
+            new LoginAuthCommand(loginAuthDto)
+        );
     }
 
     @Post('register')
 @HttpCode(201)
-    async register(@Body() data: CreateUserDto) {
-        return this.authService.register(data);
+    async register(@Body() registerAuthDto: RegisterAuthDto) {
+        return await this.commandBus.execute(
+            new RegisterAuthCommand(registerAuthDto)
+        );
     }
 
     @Post('forget')
 @HttpCode(201)
-    async forgetPassword(@Body() data: ForgetAuthDto) {
-        return this.authService.forget(data.email);
+    async forgetPassword(@Body() forgetAuthDto: ForgetAuthDto) {
+        return await this.commandBus.execute(
+            new ForgetAuthCommand(forgetAuthDto)
+        );
     }
 
     @Post('validate')
 @HttpCode(201)
-    async validate(@Body('token') token: string) {
-        return this.tokenService.validateToken(token);
+    async validate(@Body() validateAuthDto: ValidateAuthDto) {
+        return await this.commandBus.execute(
+            new ValidateAuthCommand(validateAuthDto)
+        );
     }
 
     @UseGuards(AuthGuard)
     @HttpCode(201)
     @Post('reset')
-    async reset(@Body() data: ResetAuthDto) {
-        return this.authService.resetPassword(data.password, data.token);
-    }
-
-    @UseInterceptors(FileInterceptor('file'))
-    @UseGuards(AuthGuard)
-    @Post('photo')
-    async photo(
-        @User() user,
-        @UploadedFile(new ParseFilePipe({
-            validators: [
-                new FileTypeValidator({ fileType: 'image/*' }),
-                new MaxFileSizeValidator({ maxSize: 1024 * 50 })
-            ]
-        })) photo: Express.Multer.File
-    ) {
-        const extension = photo.mimetype.split("/")[1];
-        const path = join(__dirname, '..', '..', '..', 'public', 'profilePhotos', `photo-${user.user.uuid}.${extension}`)
-
-        try {
-            await this.storageService.upload(photo, path);
-        } catch (e) {
-            throw new BadRequestException(e);
-        }
-
-        return { success: true };
-    }
-
-    @UseInterceptors(FilesInterceptor('files'))
-    @UseGuards(AuthGuard)
-    @Post('files')
-    async files(@User() user, @UploadedFiles() photo: Express.Multer.File[]) {
-        return { user, photo };
-    }
-
-    @UseInterceptors(FileFieldsInterceptor([
-        {
-            name: 'photo',
-            maxCount: 1
-        },
-        {
-            name: 'documents',
-            maxCount: 10
-        }
-    ]))
-    @UseGuards(AuthGuard)
-    @Post('files-fields')
-    async filesFields(@User() user, @UploadedFiles() files: { photo: Express.Multer.File, documents: Express.Multer.File[] }) {
-        return { user, files };
+    async reset(@Body() resetAuthDto: ResetAuthDto) {
+        return await this.commandBus.execute(
+            new ResetPasswordAuthCommand(resetAuthDto)
+        );
     }
 }
