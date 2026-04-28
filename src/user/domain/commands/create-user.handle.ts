@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 import { BadRequestException } from "@nestjs/common";
-import type { UserService } from "../../services/user.service";
+import { UserService } from "../../services/user.service";
 import { ReadUserDto } from "../dto/read-user.dto";
 import { CreateUserCommand } from "./create-user.command";
 

@@ -3,14 +3,14 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Param,
-    ParseIntPipe,
     ParseUUIDPipe,
     Patch,
     Post,
     Put,
     Query,
-    UseGuards,
+    UseGuards
 } from "@nestjs/common";
 import {
     CommandBus,
@@ -18,7 +18,7 @@ import {
 } from '@nestjs/cqrs';
 
 import { CreateUserDto } from "../domain/dto/create-user.dto";
-import { ListUserDto } from "../domain/dto/list-user.dto";
+import type { ListUserResponseDto, ListUserRequestDto } from "../domain/dto/list-user.dto";
 import { ReadUserDto } from "../domain/dto/read-user.dto";
 import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";
 import { UpdatePutUserDto } from "../domain/dto/update-put-user.dto";
@@ -37,7 +37,7 @@ import { ListUserQuery } from "../domain/queries/list-user.query";
 
 @Roles(Role.Admin)
 @UseGuards(AuthGuard, RoleGuard)
-@Controller('users')
+@Controller({ path: 'users', version: '1' })
 export class UserController {
     constructor(
         private readonly commandBus: CommandBus,
@@ -45,6 +45,7 @@ export class UserController {
     ) { }
 
     @Post()
+    @HttpCode(201)
     async create(@Body() createUserDto: CreateUserDto): Promise<ReadUserDto> {
         return await this.commandBus.execute(
             new CreateUserCommand(createUserDto)
@@ -52,17 +53,17 @@ export class UserController {
     }
 
     @Get()
+    @HttpCode(200)
     async list(
-        @Query('page', ParseIntPipe) page: number,
-        @Query('itemsPerPage', ParseIntPipe) itemsPerPage: number,
-        @Query('search') search?: string
-    ): Promise<ListUserDto> {
-        return await this.queryBus.execute<ListUserQuery, ListUserDto>(
+        @Query() { page, itemsPerPage, search }: ListUserRequestDto,
+    ): Promise<ListUserResponseDto> {
+        return await this.queryBus.execute<ListUserQuery, ListUserResponseDto>(
             new ListUserQuery(page, itemsPerPage, search)
         )
     }
 
     @Get(':uuid')
+    @HttpCode(200)
     async getUser(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<ReadUserDto> {
         return await this.queryBus.execute<FindByUuidUserQuery, ReadUserDto>(
             new FindByUuidUserQuery(uuid)
@@ -70,6 +71,7 @@ export class UserController {
     }
 
     @Put(':uuid')
+    @HttpCode(204)
     async editUser(
         @Param('uuid', ParseUUIDPipe) uuid: string,
         @Body() updatePutUserDto: UpdatePutUserDto
@@ -80,6 +82,7 @@ export class UserController {
     }
 
     @Patch(':uuid')
+    @HttpCode(204)
     async editPartialUser(
         @Param('uuid', ParseUUIDPipe) uuid: string,
         @Body() updatePatchUserDto: UpdatePatchUserDto,
@@ -90,6 +93,7 @@ export class UserController {
     }
 
     @Delete(':uuid')
+    @HttpCode(204)
     async delete(@Param('uuid', ParseUUIDPipe) uuid: string): Promise<ReadUserDto> {
         return await this.commandBus.execute(
             new DeleteUserCommand(uuid)

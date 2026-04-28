@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UpdatePutUserCommand } from "./update-put-user.command";
 
 import { BadRequestException } from "@nestjs/common";
-import type { UserService } from "../../services/user.service";
+import { UserService } from "../../services/user.service";
 import { ReadUserDto } from "../dto/read-user.dto";
 
 @CommandHandler(UpdatePutUserCommand)

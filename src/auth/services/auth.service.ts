@@ -1,13 +1,14 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { User } from "@prisma/client";
 
-import type { CreateUserDto } from "../../user/domain/dto/create-user.dto";
 import { LoginAuthDto } from "../domain/dto/login-auth.dto";
 
-import type { UserService } from "../../user/services/user.service";
 import type { EmailService } from "../../email/services/email.service";
-import type { TokenService } from "../../shared/token/services/token.service";
 import type { HashService } from "../../shared/hash/services/hash.service";
+import type { CreateTokenDto } from "../../shared/token/domain/dto/create-token.dto";
+import type { TokenService } from "../../shared/token/services/token.service";
+import type { UserService } from "../../user/services/user.service";
+import type { RegisterAuthDto } from "../domain/dto/register-auth.dto";
 
 @Injectable()
 export class AuthService {
@@ -18,16 +19,13 @@ export class AuthService {
         private readonly hashService: HashService
     ) { }
 
-    async login(data: LoginAuthDto) {
+    async login(data: LoginAuthDto): Promise<CreateTokenDto | null> {
         const user = await this.userService.getUserByEmail(data.email);
 
-        if (!user) {
-            throw new UnauthorizedException('Usuário e/ou senha incorretas!');
-        }
+        if (!user) return null;
 
-        if (!await this.hashService.compare(data.password, user.password)) {
-            throw new UnauthorizedException('Usuário e/ou senha incorretas!');
-        }
+        const passwordMatch = await this.hashService.compare(data.password, user.password);
+        if (!passwordMatch) return null;
 
         return this.tokenService.createToken(user);
     }
@@ -38,29 +36,29 @@ export class AuthService {
             audience: 'users'
         });
 
-        if (!user.uuid) {
-            throw new BadRequestException("Token inválido.")
-        }
+        if (!user.uuid) return null;
 
         return this.userService.patchUser(user.uuid, { password });
     }
 
-    async register(data: CreateUserDto) {
-        const userExist = await this.userService.getUserByEmail(data.email);
+    async register(data: RegisterAuthDto): Promise<CreateTokenDto | null> {
+        const user = await this.userService.postUser(data);
 
-        if (userExist) {
-            throw new ConflictException("Esse e-mail já está em uso.");
-        } else {
-            const user = await this.userService.postUser(data);
+        if (!user) return null;
 
-            return this.tokenService.createToken(user);
-        }
+        return this.tokenService.createToken(user);
     }
 
-    async forget(email: string) {
+    async checkEmailAvailability(email: string) {
+        const userExist = await this.userService.getUserByEmail(email);
+
+        return !!userExist;
+    };
+
+    async forget(email: string): Promise<boolean | null> {
         const user = await this.userService.getUserByEmail(email);
 
-        if (!user) throw new NotFoundException('E-mail não encontrado.');
+        if (!user) return null;
 
         const token = this.tokenService.createToken(user, {
             expiresIn: '30 minutes',
@@ -76,10 +74,6 @@ export class AuthService {
             template: 'reset-password'
         });
 
-        if (response) {
-            return true;
-        } else {
-            return false;
-        }
+        return !!response;
     }
 }
