@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 import { UpdatePatchUserCommand } from "./update-patch-user.command";
 
-import type { UserService } from "../../services/user.service";
+import { UserService } from "../../services/user.service";
 import { ReadUserDto } from "../dto/read-user.dto";
 
 @CommandHandler(UpdatePatchUserCommand)
