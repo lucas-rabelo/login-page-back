@@ -17,11 +17,13 @@ import { RegisterAuthCommand } from "../domain/command/register-auth.command";
 import { ResetPasswordAuthCommand } from "../domain/command/reset-password-auth.command";
 import { ValidateAuthCommand } from "../domain/command/validate-auth.command";
 import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
+import type { ConfigService } from "@nestjs/config";
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
     constructor(
         private readonly commandBus: CommandBus,
+        private readonly configService: ConfigService,
     ) { }
 
     @Get('google')
@@ -38,8 +40,9 @@ export class AuthController {
         const { access_token } = await this.commandBus.execute<any, { access_token: string }>(
             new VerifyUserGoogleCommand(req.user)
         );
+        const baseUrlCallback = this.configService.get('URL_FRONT_GOOGLE_CALLBACK')
         
-        res.redirect(`http://localhost:5173/auth/google/callback?token=${access_token}`)
+        res.redirect(`${baseUrlCallback}${access_token}`)
     }
     
     @Post('login')
