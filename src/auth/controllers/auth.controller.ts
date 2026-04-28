@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from "@nestjs/common";
 import { CommandBus } from "@nestjs/cqrs";
 import { AuthGuard as AuthPassportGuard } from '@nestjs/passport';
-import { FileFieldsInterceptor, FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import type { Request, Response } from "express";
 
 import { AuthService } from "../services/auth.service";
 
@@ -31,14 +31,14 @@ export class AuthController {
     @Get('google')
     @HttpCode(200)
     @UseGuards(AuthPassportGuard('google'))
-    async googleAuth(@Res() res) {
+    async googleAuth(@Res() res: Response) {
         res.redirect('/auth/google/callback');
     }
 
     @Get('google/callback')
     @HttpCode(200)
     @UseGuards(AuthPassportGuard('google'))
-    async googleAuthRedirect(@Req() req, @Res() res) {
+    async googleAuthRedirect(@Req() req: Request, @Res() res: Response) {
         const { access_token } = await this.commandBus.execute<any, { access_token: string }>(
             new VerifyUserGoogleCommand(req.user)
         );
