@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 
 import type { PrismaService } from "../../prisma/services/prisma.service";
 import type { HashService } from "../../shared/hash/services/hash.service";
@@ -123,8 +123,10 @@ export class UserService {
 
     }
 
-    async deleteUser(uuid: string): Promise<User> {
-        await this.existUser(uuid);
+    async deleteUser(uuid: string): Promise<User | null> {
+        const userFounded = await this.existUser(uuid);
+
+        if (!userFounded) return null;
 
         return await this.prismaService.user.delete({
             where: {
@@ -134,8 +136,7 @@ export class UserService {
     }
 
     async existUser(uuid: string) {
-        if (!(await this.getUserByUuid(uuid))) {
-            throw new NotFoundException(`o usuário ${uuid} não foi encontrado.`);
-        }
+        const userFounded = await this.getUserByUuid(uuid)
+        return !!userFounded;
     }
 }
