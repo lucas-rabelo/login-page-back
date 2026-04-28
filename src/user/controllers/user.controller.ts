@@ -11,7 +11,7 @@ import {
     Post,
     Put,
     Query,
-    UseGuards,
+    UseGuards
 } from "@nestjs/common";
 import {
     CommandBus,
@@ -19,7 +19,7 @@ import {
 } from '@nestjs/cqrs';
 
 import { CreateUserDto } from "../domain/dto/create-user.dto";
-import { ListUserDto } from "../domain/dto/list-user.dto";
+import type { ListUserResponseDto, ListUserRequestDto } from "../domain/dto/list-user.dto";
 import { ReadUserDto } from "../domain/dto/read-user.dto";
 import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";
 import { UpdatePutUserDto } from "../domain/dto/update-put-user.dto";
@@ -56,11 +56,9 @@ export class UserController {
     @Get()
     @HttpCode(200)
     async list(
-        @Query('page', ParseIntPipe) page: number,
-        @Query('itemsPerPage', ParseIntPipe) itemsPerPage: number,
-        @Query('search') search?: string
-    ): Promise<ListUserDto> {
-        return await this.queryBus.execute<ListUserQuery, ListUserDto>(
+        @Query() { page, itemsPerPage, search }: ListUserRequestDto,
+    ): Promise<ListUserResponseDto> {
+        return await this.queryBus.execute<ListUserQuery, ListUserResponseDto>(
             new ListUserQuery(page, itemsPerPage, search)
         )
     }
