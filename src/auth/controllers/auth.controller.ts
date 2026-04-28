@@ -1,8 +1,6 @@
 import { Body, Controller, Get, HttpCode, Post, Req, Res, UseGuards } from "@nestjs/common";
-import { CommandBus } from "@nestjs/cqrs";
 import { AuthGuard as AuthPassportGuard } from '@nestjs/passport';
 import type { Request, Response } from "express";
-
 import { CommandBus } from "@nestjs/cqrs";
 
 import { ForgetAuthDto } from "../domain/dto/forget-auth.dto";
@@ -11,9 +9,6 @@ import type { RegisterAuthDto } from "../domain/dto/register-auth.dto";
 import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
 import type { ValidateAuthDto } from "../domain/dto/validate-auth.dto";
 
-import { CommandBus } from "@nestjs/cqrs";
-import { join } from "path";
-import { User } from "../../core/decorators/user.decorator";
 import { AuthGuard } from "../../core/guards/auth.guard";
 
 import { ForgetAuthCommand } from "../domain/command/forget-auth.command";
@@ -22,15 +17,11 @@ import { RegisterAuthCommand } from "../domain/command/register-auth.command";
 import { ResetPasswordAuthCommand } from "../domain/command/reset-password-auth.command";
 import { ValidateAuthCommand } from "../domain/command/validate-auth.command";
 import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
-import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
     constructor(
-        private readonly authService: AuthService,
-        private readonly tokenService: TokenService,
         private readonly commandBus: CommandBus,
-        private readonly storageService: StorageService
     ) { }
 
     @Get('google')
@@ -39,7 +30,7 @@ export class AuthController {
     async googleAuth(@Res() res: Response) {
         res.redirect('/auth/google/callback');
     }
-
+    
     @Get('google/callback')
     @HttpCode(200)
     @UseGuards(AuthPassportGuard('google'))
@@ -47,42 +38,42 @@ export class AuthController {
         const { access_token } = await this.commandBus.execute<any, { access_token: string }>(
             new VerifyUserGoogleCommand(req.user)
         );
-
+        
         res.redirect(`http://localhost:5173/auth/google/callback?token=${access_token}`)
     }
-
+    
     @Post('login')
-@HttpCode(201)
+    @HttpCode(201)
     async login(@Body() loginAuthDto: LoginAuthDto) {
         return await this.commandBus.execute(
             new LoginAuthCommand(loginAuthDto)
         );
     }
-
+    
     @Post('register')
-@HttpCode(201)
+    @HttpCode(201)
     async register(@Body() registerAuthDto: RegisterAuthDto) {
         return await this.commandBus.execute(
             new RegisterAuthCommand(registerAuthDto)
         );
     }
-
+    
     @Post('forget')
-@HttpCode(201)
+    @HttpCode(201)
     async forgetPassword(@Body() forgetAuthDto: ForgetAuthDto) {
         return await this.commandBus.execute(
             new ForgetAuthCommand(forgetAuthDto)
         );
     }
-
+    
     @Post('validate')
-@HttpCode(201)
+    @HttpCode(201)
     async validate(@Body() validateAuthDto: ValidateAuthDto) {
         return await this.commandBus.execute(
             new ValidateAuthCommand(validateAuthDto)
         );
     }
-
+    
     @UseGuards(AuthGuard)
     @HttpCode(201)
     @Post('reset')

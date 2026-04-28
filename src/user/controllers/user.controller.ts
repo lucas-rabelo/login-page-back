@@ -5,7 +5,6 @@ import {
     Get,
     HttpCode,
     Param,
-    ParseIntPipe,
     ParseUUIDPipe,
     Patch,
     Post,
