@@ -3,7 +3,7 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 import { FindByUuidUserQuery } from "./findByUuid-user.query";
 
 import { BadRequestException } from "@nestjs/common";
-import type { UserService } from "../../services/user.service";
+import { UserService } from "../../services/user.service";
 import { ReadUserDto } from "../dto/read-user.dto";
 
 @QueryHandler(FindByUuidUserQuery)

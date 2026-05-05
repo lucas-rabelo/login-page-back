@@ -2,7 +2,7 @@ import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
 
 import { ListUserQuery } from "./list-user.query";
 
-import type { UserService } from "../../services/user.service";
+import { UserService } from "../../services/user.service";
 import { ListUserResponseDto } from "../dto/list-user.dto";
 import { ReadUserDto } from "../dto/read-user.dto";
 

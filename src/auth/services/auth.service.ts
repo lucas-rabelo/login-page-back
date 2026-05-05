@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
 import { User } from "@prisma/client";
 
-import { LoginAuthDto } from "../domain/dto/login-auth.dto";
-
-import type { EmailService } from "../../email/services/email.service";
-import type { HashService } from "../../shared/hash/services/hash.service";
-import type { CreateTokenDto } from "../../shared/token/domain/dto/create-token.dto";
-import type { TokenService } from "../../shared/token/services/token.service";
-import type { UserService } from "../../user/services/user.service";
+import type { LoginAuthDto } from "../domain/dto/login-auth.dto";
 import type { RegisterAuthDto } from "../domain/dto/register-auth.dto";
+import type { CreateTokenDto } from "../../shared/token/domain/dto/create-token.dto";
+
+import { EmailService } from "../../email/services/email.service";
+import { HashService } from "../../shared/hash/services/hash.service";
+import { TokenService } from "../../shared/token/services/token.service";
+import { UserService } from "../../user/services/user.service";
 
 @Injectable()
 export class AuthService {

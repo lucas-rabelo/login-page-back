@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import type { PrismaService } from "../../prisma/services/prisma.service";
-import type { HashService } from "../../shared/hash/services/hash.service";
+import { PrismaService } from "../../prisma/services/prisma.service";
+import { HashService } from "../../shared/hash/services/hash.service";
 
 import { CreateUserDto } from "../domain/dto/create-user.dto";
 import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";

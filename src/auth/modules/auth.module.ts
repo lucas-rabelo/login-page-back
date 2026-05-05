@@ -21,9 +21,6 @@ export const CommandHandlers = [VerifyUserGoogleHandler];
         CqrsModule,
         HashModule,
         PassportModule.register({ defaultStrategy: 'google' }),
-        JwtModule.register({
-            secret: `${process.env.SECRET_ENV}`
-        }),
         PrismaModule,
         TokenModule,
         EmailModule,

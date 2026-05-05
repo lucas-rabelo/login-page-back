@@ -17,7 +17,7 @@ import { RegisterAuthCommand } from "../domain/command/register-auth.command";
 import { ResetPasswordAuthCommand } from "../domain/command/reset-password-auth.command";
 import { ValidateAuthCommand } from "../domain/command/validate-auth.command";
 import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {
