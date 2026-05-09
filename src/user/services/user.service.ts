@@ -110,7 +110,14 @@ export class UserService {
             where: {
                 uuid
             },
-            data
+            data: {
+                name: data.name,
+                email: data.email,
+                birthDate: data.birthDate,
+                role: data.role,
+                password: data.password,
+                googleSub: data.googleSub,
+            }
         });
     }
 
@@ -125,7 +132,14 @@ export class UserService {
             where: {
                 uuid
             },
-            data
+            data: {
+                name: data.name,
+                email: data.email,
+                birthDate: data.birthDate,
+                role: data.role,
+                password: data.password,
+                googleSub: data.googleSub,
+            }
         });
 
     }

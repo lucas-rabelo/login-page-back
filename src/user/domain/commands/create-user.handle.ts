@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, ConflictException } from "@nestjs/common";
 import { UserService } from "../../services/user.service";
 import { ReadUserDto } from "../dto/read-user.dto";
 import { CreateUserCommand } from "./create-user.command";
@@ -12,6 +12,15 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
     async execute(command: CreateUserCommand): Promise<ReadUserDto> {
         const { createUserDto } = command;
+        const { email, password, confirmPassword } = createUserDto;
+
+        const emailInUse = await this.userService.getUserByEmail(email);
+    
+        if (emailInUse) throw new ConflictException("Esse e-mail já está em uso.");
+    
+        const passwordAndConfirmPasswordIsNotEqual = password !== confirmPassword;
+    
+        if(passwordAndConfirmPasswordIsNotEqual) throw new BadRequestException("As senhas não conferem");
 
         const newUser = await this.userService.postUser(createUserDto);
 
