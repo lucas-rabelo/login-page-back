@@ -18,7 +18,7 @@ import {
 } from '@nestjs/cqrs';
 
 import { CreateUserDto } from "../domain/dto/create-user.dto";
-import type { ListUserResponseDto, ListUserRequestDto } from "../domain/dto/list-user.dto";
+import { ListUserResponseDto, ListUserRequestDto } from "../domain/dto/list-user.dto";
 import { ReadUserDto } from "../domain/dto/read-user.dto";
 import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";
 import { UpdatePutUserDto } from "../domain/dto/update-put-user.dto";
@@ -28,12 +28,14 @@ import { DeleteUserCommand } from "../domain/commands/delete-user.command";
 import { UpdatePatchUserCommand } from "../domain/commands/update-patch-user.command";
 import { UpdatePutUserCommand } from "../domain/commands/update-put-user.command";
 
-import { Roles } from "../../core/decorators/role.decorator";
-import { Role } from "../../core/enums/role.enum";
-import { AuthGuard } from "../../core/guards/auth.guard";
-import { RoleGuard } from "../../core/guards/role.guard";
 import { FindByUuidUserQuery } from "../domain/queries/findByUuid-user.query";
 import { ListUserQuery } from "../domain/queries/list-user.query";
+
+import { Roles } from "../../core/decorators/role.decorator";
+import { Role } from "../../core/enums/role.enum";
+
+import { AuthGuard } from "../../core/guards/auth.guard";
+import { RoleGuard } from "../../core/guards/role.guard";
 
 @Roles(Role.Admin)
 @UseGuards(AuthGuard, RoleGuard)

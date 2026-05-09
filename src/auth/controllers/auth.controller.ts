@@ -5,9 +5,9 @@ import { CommandBus } from "@nestjs/cqrs";
 
 import { ForgetAuthDto } from "../domain/dto/forget-auth.dto";
 import { LoginAuthDto } from "../domain/dto/login-auth.dto";
-import type { RegisterAuthDto } from "../domain/dto/register-auth.dto";
+import { RegisterAuthDto } from "../domain/dto/register-auth.dto";
 import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
-import type { ValidateAuthDto } from "../domain/dto/validate-auth.dto";
+import { ValidateAuthDto } from "../domain/dto/validate-auth.dto";
 
 import { AuthGuard } from "../../core/guards/auth.guard";
 
