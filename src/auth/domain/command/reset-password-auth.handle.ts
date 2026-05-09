@@ -8,7 +8,11 @@ export class ResetPasswordAuthHandler implements ICommandHandler<ResetPasswordAu
   constructor(private readonly authService: AuthService) { }
 
   async execute(command: ResetPasswordAuthCommand): Promise<boolean | null> {
-    const { password, token } = command.resetAuthDto;
+    const { password, confirmPassword, token } = command.resetAuthDto;
+
+    const passwordAndConfirmPasswordIsNotEqual = password !== confirmPassword;
+
+    if(passwordAndConfirmPasswordIsNotEqual) throw new BadRequestException("As senhas não conferem");
 
     const user = await this.authService.resetPassword(password, token);
 

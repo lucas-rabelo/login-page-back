@@ -10,7 +10,7 @@ export class EmailService {
     ) { }
 
     async sendEmail({ token, user, subject, template }: SendEmailDto) {
-        const url = `${process.env.URL_FRONT}reset_password/${token}`;
+        const url = `${process.env.URL_FRONT}/reset_password/${token}`;
 
         const response = await this.mailerService.sendMail({
             subject,
