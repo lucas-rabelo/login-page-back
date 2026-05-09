@@ -10,11 +10,15 @@ export class RegisterAuthHandler implements ICommandHandler<RegisterAuthCommand>
 
   async execute(command: RegisterAuthCommand): Promise<CreateTokenDto | null> {
     const { registerAuthDto } = command;
-    const { email } = registerAuthDto;
+    const { email, password, confirmPassword } = registerAuthDto;
 
     const emailInUse = await this.authService.checkEmailAvailability(email);
 
     if (emailInUse) throw new ConflictException("Esse e-mail já está em uso.");
+
+    const passwordAndConfirmPasswordIsNotEqual = password !== confirmPassword;
+
+    if(passwordAndConfirmPasswordIsNotEqual) throw new BadRequestException("As senhas não conferem");
 
     const token = await this.authService.register(registerAuthDto);
 
