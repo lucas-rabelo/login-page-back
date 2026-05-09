@@ -33,7 +33,7 @@ import { UserModule } from './user/modules/user.module';
       },
     }),
     forwardRef(() => UserModule),
-    forwardRef(() => AuthModule)
+    forwardRef(() => AuthModule),
   ],
 })
 export class AppModule { }

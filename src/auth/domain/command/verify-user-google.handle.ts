@@ -25,7 +25,8 @@ export class VerifyUserGoogleHandler implements ICommandHandler<VerifyUserGoogle
                     googleSub: loginGoogleAuthDto.sub,
                     role: 'user',
                     birthDate: null,
-                    password: null
+                    password: null,
+                    confirmPassword: null,
                 });
 
                 return this.tokenService.createToken(newUser);

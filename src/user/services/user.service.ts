@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
-import type { PrismaService } from "../../prisma/services/prisma.service";
-import type { HashService } from "../../shared/hash/services/hash.service";
+import { PrismaService } from "../../prisma/services/prisma.service";
+import { HashService } from "../../shared/hash/services/hash.service";
 
 import { CreateUserDto } from "../domain/dto/create-user.dto";
 import { UpdatePatchUserDto } from "../domain/dto/update-patch-user.dto";
@@ -21,7 +21,14 @@ export class UserService {
         }
 
         return this.prismaService.user.create({
-            data,
+            data: {
+                name: data.name,
+                email: data.email,
+                birthDate: data.birthDate,
+                role: data.role,
+                password: data.password,
+                googleSub: data.googleSub,
+            },
         });
     }
 
@@ -103,7 +110,14 @@ export class UserService {
             where: {
                 uuid
             },
-            data
+            data: {
+                name: data.name,
+                email: data.email,
+                birthDate: data.birthDate,
+                role: data.role,
+                password: data.password,
+                googleSub: data.googleSub,
+            }
         });
     }
 
@@ -118,7 +132,14 @@ export class UserService {
             where: {
                 uuid
             },
-            data
+            data: {
+                name: data.name,
+                email: data.email,
+                birthDate: data.birthDate,
+                role: data.role,
+                password: data.password,
+                googleSub: data.googleSub,
+            }
         });
 
     }

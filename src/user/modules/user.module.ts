@@ -9,10 +9,13 @@ import { DeleteUserHandler } from "../domain/commands/delete-user.handle";
 import { UpdatePatchUserHandler } from "../domain/commands/update-patch-user.handle";
 import { UpdatePutUserHandler } from "../domain/commands/update-put-user.handle";
 
-import { PrismaModule } from "../../prisma/modules/prisma.module";
-import { HashModule } from "../../shared/hash/modules/hash.module";
 import { FindByUuidUserHandler } from "../domain/queries/findByUuid-user.handle";
 import { ListUserHandler } from "../domain/queries/list-user.handle";
+
+import { PrismaModule } from "../../prisma/modules/prisma.module";
+import { HashModule } from "../../shared/hash/modules/hash.module";
+import { TokenModule } from "../../shared/token/modules/token.module";
+
 
 export const CommandHandlers = [
     CreateUserHandler,
@@ -31,6 +34,7 @@ export const QueryHandlers = [
         PrismaModule,
         CqrsModule,
         HashModule,
+        TokenModule,
     ],
     controllers: [UserController],
     providers: [UserService, ...CommandHandlers, ...QueryHandlers],

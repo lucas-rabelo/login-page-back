@@ -5,9 +5,9 @@ import { CommandBus } from "@nestjs/cqrs";
 
 import { ForgetAuthDto } from "../domain/dto/forget-auth.dto";
 import { LoginAuthDto } from "../domain/dto/login-auth.dto";
-import type { RegisterAuthDto } from "../domain/dto/register-auth.dto";
+import { RegisterAuthDto } from "../domain/dto/register-auth.dto";
 import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
-import type { ValidateAuthDto } from "../domain/dto/validate-auth.dto";
+import { ValidateAuthDto } from "../domain/dto/validate-auth.dto";
 
 import { AuthGuard } from "../../core/guards/auth.guard";
 
@@ -17,7 +17,7 @@ import { RegisterAuthCommand } from "../domain/command/register-auth.command";
 import { ResetPasswordAuthCommand } from "../domain/command/reset-password-auth.command";
 import { ValidateAuthCommand } from "../domain/command/validate-auth.command";
 import { VerifyUserGoogleCommand } from "../domain/command/verify-user-google.command";
-import type { ConfigService } from "@nestjs/config";
+import { ConfigService } from "@nestjs/config";
 
 @Controller({ path: 'auth', version: '1' })
 export class AuthController {

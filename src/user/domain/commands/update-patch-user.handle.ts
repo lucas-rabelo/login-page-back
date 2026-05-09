@@ -1,4 +1,4 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, ConflictException } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
 import { UpdatePatchUserCommand } from "./update-patch-user.command";
@@ -14,6 +14,15 @@ export class UpdatePatchUserHandler implements ICommandHandler<UpdatePatchUserCo
 
     async execute(command: UpdatePatchUserCommand): Promise<ReadUserDto> {
         const { uuid, updateUserDto } = command;
+        const { email, password, confirmPassword } = updateUserDto;
+
+        const emailInUse = await this.userService.getUserByEmail(email);
+    
+        if (emailInUse) throw new ConflictException("Esse e-mail já está em uso.");
+    
+        const passwordAndConfirmPasswordIsNotEqual = password !== confirmPassword;
+    
+        if(passwordAndConfirmPasswordIsNotEqual) throw new BadRequestException("As senhas não conferem");
 
         const user = await this.userService.patchUser(uuid, updateUserDto);
 
