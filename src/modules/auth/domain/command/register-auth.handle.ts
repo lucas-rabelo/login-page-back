@@ -1,6 +1,6 @@
 import { BadRequestException, ConflictException } from "@nestjs/common";
 import { CommandHandler, type ICommandHandler } from "@nestjs/cqrs";
-import type { CreateTokenDto } from "../../../shared/token/domain/dto/create-token.dto";
+import type { CreateTokenDto } from "../../../../shared/token/domain/dto/create-token.dto";
 import { AuthService } from "../../services/auth.service";
 import { RegisterAuthCommand } from "./register-auth.command";
 

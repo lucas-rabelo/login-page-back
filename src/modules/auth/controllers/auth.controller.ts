@@ -9,7 +9,7 @@ import { RegisterAuthDto } from "../domain/dto/register-auth.dto";
 import { ResetAuthDto } from "../domain/dto/reset-auth.dto";
 import { ValidateAuthDto } from "../domain/dto/validate-auth.dto";
 
-import { AuthGuard } from "../../core/guards/auth.guard";
+import { AuthGuard } from "../../../core/guards/auth.guard";
 
 import { ForgetAuthCommand } from "../domain/command/forget-auth.command";
 import { LoginAuthCommand } from "../domain/command/login-auth.command";

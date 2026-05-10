@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 
-import { TokenService } from "../../../shared/token/services/token.service";
+import { TokenService } from "../../../../shared/token/services/token.service";
 import { UserService } from "../../../user/services/user.service";
 import { VerifyUserGoogleCommand } from "./verify-user-google.command";
 

@@ -3,11 +3,11 @@ import { User } from "@prisma/client";
 
 import type { LoginAuthDto } from "../domain/dto/login-auth.dto";
 import type { RegisterAuthDto } from "../domain/dto/register-auth.dto";
-import type { CreateTokenDto } from "../../shared/token/domain/dto/create-token.dto";
+import type { CreateTokenDto } from "../../../shared/token/domain/dto/create-token.dto";
 
-import { EmailService } from "../../email/services/email.service";
-import { HashService } from "../../shared/hash/services/hash.service";
-import { TokenService } from "../../shared/token/services/token.service";
+import { EmailService } from "../../../shared/email/services/email.service";
+import { HashService } from "../../../shared/hash/services/hash.service";
+import { TokenService } from "../../../shared/token/services/token.service";
 import { UserService } from "../../user/services/user.service";
 
 @Injectable()
