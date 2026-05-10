@@ -7,10 +7,10 @@ import { CqrsModule } from "@nestjs/cqrs";
 import { AuthService } from "../services/auth.service";
 import { GoogleStrategy } from "../strategies/google.strategy";
 
-import { EmailModule } from "../../email/modules/email.module";
-import { PrismaModule } from "../../prisma/modules/prisma.module";
-import { HashModule } from "../../shared/hash/modules/hash.module";
-import { TokenModule } from "../../shared/token/modules/token.module";
+import { EmailModule } from "../../../shared/email/modules/email.module";
+import { PrismaModule } from "../../../infra/prisma/modules/prisma.module";
+import { HashModule } from "../../../shared/hash/modules/hash.module";
+import { TokenModule } from "../../../shared/token/modules/token.module";
 import { UserModule } from "../../user/modules/user.module";
 
 import { VerifyUserGoogleHandler } from "../domain/command/verify-user-google.handle";

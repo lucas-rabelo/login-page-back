@@ -1,7 +1,7 @@
 import { BadRequestException } from "@nestjs/common";
 import { CommandHandler, type ICommandHandler } from "@nestjs/cqrs";
 import { ValidateAuthCommand } from "./validate-auth.command";
-import { TokenService } from "../../../shared/token/services/token.service";
+import { TokenService } from "../../../../shared/token/services/token.service";
 
 @CommandHandler(ValidateAuthCommand)
 export class ValidateAuthHandler implements ICommandHandler<ValidateAuthCommand> {

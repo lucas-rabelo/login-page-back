@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import type { User } from "@prisma/client";
-import { UserService } from "../../user/services/user.service";
+import { UserService } from "../../modules/user/services/user.service";
 import { TokenService } from "../../shared/token/services/token.service";
 
 @Injectable()
